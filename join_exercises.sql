@@ -51,3 +51,31 @@ WHERE titles.to_date = '9999-01-01'
     AND departments.dept_name = 'Customer Service'
     AND dept_emp.to_date = '9999-01-01'
 GROUP BY titles.title;
+
+-- Find the current salary of all current managers.
+SELECT d.dept_name AS 'Department Name', CONCAT(e.first_name, ' ', e.last_name) AS 'Department Manager', s.salary
+FROM employees e
+         JOIN dept_manager dm
+              ON dm.emp_no = e.emp_no
+         JOIN salaries s
+              ON s.emp_no = e.emp_no
+         JOIN departments d
+              ON d.dept_no = dm.dept_no
+WHERE dm.to_date >= CURDATE()
+  AND s.to_date >= CURDATE()
+ORDER BY d.dept_name;
+
+# Bonus Find the names of all current employees, their department name, and their current manager's name.
+SELECT d.dept_name, mortals.first_name, mortals.last_name, mgmt.first_name, mgmt.last_name
+FROM employees mortals
+         JOIN dept_emp de
+              ON mortals.emp_no = de.emp_no
+         JOIN departments d
+              ON de.dept_no = d.dept_no
+         JOIN dept_manager manager
+              ON d.dept_no = manager.dept_no
+         JOIN employees mgmt
+              ON manager.emp_no = mgmt.emp_no
+WHERE de.to_date > curdate()
+  AND manager.to_date > curdate()
+ORDER BY d.dept_name;
